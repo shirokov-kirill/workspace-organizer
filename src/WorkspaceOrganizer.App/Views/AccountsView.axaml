@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkspaceOrganizer.App.ViewModels"
+             x:Class="WorkspaceOrganizer.App.Views.AccountsView"
+             x:DataType="vm:WorkspaceViewModel">
+    <Grid ColumnDefinitions="300,*" Margin="0,12,0,0">
+        <DockPanel Margin="0,0,16,0">
+            <Button DockPanel.Dock="Bottom" Content="+ Add account" HorizontalAlignment="Stretch" Margin="0,8,0,0"
+                    Command="{Binding AddAccountCommand}" />
+            <ListBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AccountViewModel">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Service}" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding Login}" FontSize="12" Opacity="0.65" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <TextBlock Grid.Column="1" Text="Select an account, or add one. Only metadata is stored here — keep passwords in your password manager or the workspace's browser profile."
+                   TextWrapping="Wrap" Opacity="0.6" MaxWidth="460" HorizontalAlignment="Left"
+                   IsVisible="{Binding SelectedAccount, Converter={x:Static ObjectConverters.IsNull}}" />
+
+        <ScrollViewer Grid.Column="1" IsVisible="{Binding SelectedAccount, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel DataContext="{Binding SelectedAccount}" x:DataType="vm:AccountViewModel" Spacing="10" MaxWidth="560" HorizontalAlignment="Left">
+                <TextBlock Text="Service" />
+                <TextBox Text="{Binding Service}" />
+                <TextBlock Text="Login URL" />
+                <TextBox Text="{Binding Url}" PlaceholderText="https://github.com/login" />
+                <TextBlock Text="Login / email" />
+                <TextBox Text="{Binding Login}" />
+                <TextBlock Text="Two-factor method" />
+                <TextBox Text="{Binding TwoFactor}" PlaceholderText="e.g. authenticator app on work phone" />
+                <TextBlock Text="Workspace" />
+                <ComboBox ItemsSource="{Binding AllWorkspaces}" SelectedItem="{Binding Workspace}" MinWidth="220"
+                          DisplayMemberBinding="{Binding Name, x:DataType=vm:WorkspaceViewModel}" />
+                <TextBlock Text="Notes" />
+                <TextBox Text="{Binding Notes}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80" />
+                <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,6,0,0">
+                    <Button Content="Open in workspace browser" Classes="accent"
+                            Command="{Binding Workspace.OpenAccountCommand}" CommandParameter="{Binding}" />
+                    <Button Content="Remove"
+                            Command="{Binding Workspace.RemoveAccountCommand}" CommandParameter="{Binding}" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

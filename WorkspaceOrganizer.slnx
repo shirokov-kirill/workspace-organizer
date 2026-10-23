@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WorkspaceOrganizer.App/WorkspaceOrganizer.App.csproj" />
+    <Project Path="src/WorkspaceOrganizer.Cli/WorkspaceOrganizer.Cli.csproj" />
+    <Project Path="src/WorkspaceOrganizer.Core/WorkspaceOrganizer.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WorkspaceOrganizer.Core.Tests/WorkspaceOrganizer.Core.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,5 @@
+# All text files use CRLF line endings in the working tree, on every OS (see CLAUDE.md).
+* text=auto eol=crlf
+
+*.ico binary
+*.png binary

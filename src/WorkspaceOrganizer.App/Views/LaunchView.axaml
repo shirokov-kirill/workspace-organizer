@@ -1,0 +1,102 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkspaceOrganizer.App.ViewModels"
+             xmlns:launch="using:WorkspaceOrganizer.Core.Launching"
+             x:Class="WorkspaceOrganizer.App.Views.LaunchView"
+             x:DataType="vm:WorkspaceViewModel">
+    <ScrollViewer>
+        <StackPanel Spacing="10" Margin="0,12,0,12" MaxWidth="900" HorizontalAlignment="Left">
+            <TextBlock Text="Workspace" FontWeight="SemiBold" FontSize="16" />
+            <Grid ColumnDefinitions="*,12,160">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Name" />
+                    <TextBox Text="{Binding Name}" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Spacing="4">
+                    <TextBlock Text="Color" />
+                    <TextBox Text="{Binding Color}" PlaceholderText="#2563EB" />
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Text="Profile folder" FontWeight="SemiBold" FontSize="16" Margin="0,12,0,0" />
+            <TextBlock TextWrapping="Wrap" Opacity="0.7" FontSize="12"
+                       Text="Logins, browser data and app data for this workspace live here. Programs started from a folder inside it (through the shims) or from this workspace's terminal use this workspace's logins." />
+            <Grid ColumnDefinitions="*,8,Auto">
+                <SelectableTextBlock Text="{Binding ProfileFolderPath}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                <Button Grid.Column="2" Content="Open folder" Command="{Binding OpenFolderCommand}" />
+            </Grid>
+            <Grid ColumnDefinitions="200,8,Auto">
+                <TextBox Text="{Binding FolderDraft}" PlaceholderText="folder name" />
+                <Button Grid.Column="2" Content="Rename folder" Command="{Binding RenameFolderCommand}" />
+            </Grid>
+
+            <TextBlock Text="Command-line tools" FontWeight="SemiBold" FontSize="16" Margin="0,12,0,0" />
+            <TextBlock TextWrapping="Wrap" Opacity="0.7" FontSize="12"
+                       Text="Each checked tool keeps its login inside this profile via the environment variable shown. Unchecked tools use your normal login." />
+            <ItemsControl ItemsSource="{Binding Tools}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ToolToggleViewModel">
+                        <StackPanel Margin="0,2">
+                            <CheckBox IsChecked="{Binding IsEnabled}" Content="{Binding Tool.Name}" />
+                            <TextBlock Text="{Binding Details}" Margin="28,0,0,4" FontSize="11" Opacity="0.6" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <CheckBox IsChecked="{Binding RedirectHome}" Content="Also redirect the whole home folder (USERPROFILE, HOME, APPDATA, LOCALAPPDATA)" />
+            <TextBlock Margin="28,0,0,0" TextWrapping="Wrap" Opacity="0.6" FontSize="11"
+                       Text="Catches tools that have no setting of their own, but they start from scratch in this profile: no shell history, settings or caches from your normal home. Logins kept in Windows Credential Manager are still shared." />
+            <TextBlock Text="Extra environment variables (KEY=VALUE per line)" Margin="0,6,0,0" />
+            <TextBox Text="{Binding ExtraEnvironmentText}" AcceptsReturn="True" MinHeight="60" FontFamily="Consolas, monospace"
+                     PlaceholderText="AWS_PROFILE=work" />
+
+            <TextBlock Text="Browser" FontWeight="SemiBold" FontSize="16" Margin="0,12,0,0" />
+            <Grid ColumnDefinitions="*,12,*">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Browser" />
+                    <ComboBox ItemsSource="{Binding Owner.Browsers}" SelectedItem="{Binding SelectedBrowser}" HorizontalAlignment="Stretch"
+                              DisplayMemberBinding="{Binding Name, x:DataType=launch:BrowserInfo}" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Spacing="4">
+                    <TextBlock Text="Existing browser profile (optional)" />
+                    <TextBox Text="{Binding BrowserProfile}" PlaceholderText="Leave empty for an isolated profile" />
+                </StackPanel>
+            </Grid>
+            <TextBlock Text="{Binding ProfileHint}" TextWrapping="Wrap" Opacity="0.7" FontSize="12" />
+
+            <TextBlock Text="Apps" FontWeight="SemiBold" FontSize="16" Margin="0,12,0,0" />
+            <TextBlock TextWrapping="Wrap" Opacity="0.7" FontSize="12"
+                       Text="Use {profileDir} in the arguments to give an app its own data folder per workspace, e.g. VS Code / Slack / other Electron apps: --user-data-dir &quot;{profileDir}&quot;" />
+            <Grid ColumnDefinitions="240,16,*">
+                <DockPanel>
+                    <Button DockPanel.Dock="Bottom" Content="+ Add app" HorizontalAlignment="Stretch" Margin="0,8,0,0"
+                            Command="{Binding AddAppCommand}" />
+                    <ListBox ItemsSource="{Binding Apps}" SelectedItem="{Binding SelectedApp}" MinHeight="160">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:AppShortcutViewModel">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+
+                <StackPanel Grid.Column="2" Spacing="8" DataContext="{Binding SelectedApp}" x:DataType="vm:AppShortcutViewModel"
+                            IsVisible="{Binding Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <TextBlock Text="Name" />
+                    <TextBox Text="{Binding Name}" />
+                    <TextBlock Text="Executable" />
+                    <Grid ColumnDefinitions="*,8,Auto">
+                        <TextBox Text="{Binding Path}" />
+                        <Button Grid.Column="2" Content="Browse…" Click="OnBrowseExecutable" />
+                    </Grid>
+                    <TextBlock Text="Arguments" />
+                    <TextBox Text="{Binding Arguments}" PlaceholderText="--user-data-dir &quot;{profileDir}&quot;" />
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                        <Button Content="Launch" Classes="accent" Command="{Binding Workspace.LaunchAppCommand}" CommandParameter="{Binding}" />
+                        <Button Content="Remove" Command="{Binding Workspace.RemoveAppCommand}" CommandParameter="{Binding}" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

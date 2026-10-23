@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkspaceOrganizer.App.ViewModels"
+             xmlns:views="using:WorkspaceOrganizer.App.Views"
+             x:Class="WorkspaceOrganizer.App.Views.WorkspaceView"
+             x:DataType="vm:WorkspaceViewModel">
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Padding="20,16,20,8">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Border Width="6" CornerRadius="3" Background="{Binding Brush}" Margin="0,0,14,0" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name}" FontSize="24" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding SummaryText}" Opacity="0.7" TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Button Content="Open terminal" Command="{Binding OpenTerminalCommand}" />
+                    <Button Content="Open browser" Classes="accent"
+                            Command="{Binding OpenBrowserCommand}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <TabControl Margin="12,0,12,8">
+            <TabItem Header="Accounts">
+                <views:AccountsView />
+            </TabItem>
+            <TabItem Header="Subscriptions">
+                <views:SubscriptionsView />
+            </TabItem>
+            <TabItem Header="Launch &amp; settings">
+                <views:LaunchView />
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>

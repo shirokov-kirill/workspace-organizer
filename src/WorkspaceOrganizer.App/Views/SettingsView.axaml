@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkspaceOrganizer.App.ViewModels"
+             x:Class="WorkspaceOrganizer.App.Views.SettingsView"
+             x:DataType="vm:MainViewModel">
+    <ScrollViewer>
+        <StackPanel Spacing="10" Margin="20,16,20,16" MaxWidth="900" HorizontalAlignment="Left">
+            <TextBlock Text="Settings" FontSize="24" FontWeight="SemiBold" />
+
+            <TextBlock Text="Profiles root" FontWeight="SemiBold" FontSize="16" Margin="0,12,0,0" />
+            <TextBlock TextWrapping="Wrap" Opacity="0.7" FontSize="12"
+                       Text="Each workspace gets a folder here. Changing it doesn't move existing folders." />
+            <Grid ColumnDefinitions="*,8,Auto">
+                <TextBox Text="{Binding ProfilesRootDraft}" />
+                <Button Grid.Column="2" Content="Apply" Command="{Binding ApplyProfilesRootCommand}" />
+            </Grid>
+
+            <TextBlock Text="Command shims" FontWeight="SemiBold" FontSize="16" Margin="0,12,0,0" />
+            <TextBlock TextWrapping="Wrap" Opacity="0.7" FontSize="12"
+                       Text="Shims are small stand-ins for claude, gh, git and the other enabled tools, placed at the front of your user PATH. In any terminal they check whether the current folder is inside a profile folder (or the terminal is a profile terminal) and run the real tool with that profile's logins. Elsewhere they run the tool unchanged." />
+            <SelectableTextBlock Text="{Binding ShimsDirectory}" FontSize="12" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="Install / refresh shims" Classes="accent" Command="{Binding InstallShimsCommand}" />
+                <Button Content="Uninstall shims" Command="{Binding UninstallShimsCommand}" />
+            </StackPanel>
+            <SelectableTextBlock Text="{Binding ShimReport}" TextWrapping="Wrap" FontSize="12" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

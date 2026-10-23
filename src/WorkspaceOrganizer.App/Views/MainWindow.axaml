@@ -1,0 +1,69 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:WorkspaceOrganizer.App.ViewModels"
+        xmlns:views="using:WorkspaceOrganizer.App.Views"
+        x:Class="WorkspaceOrganizer.App.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Workspace Organizer"
+        Width="1150" Height="720" MinWidth="820" MinHeight="500">
+
+    <DockPanel>
+        <Border DockPanel.Dock="Bottom" Padding="12,6" Background="#14808080">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="{Binding Status}" TextTrimming="CharacterEllipsis" />
+                <SelectableTextBlock Grid.Column="1" Opacity="0.6" FontSize="12"
+                                     Text="{Binding DataFilePath, StringFormat='Data: {0}'}" />
+            </Grid>
+        </Border>
+
+        <Grid ColumnDefinitions="230,*">
+            <Border Background="#0F808080" Padding="10">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Workspaces" FontWeight="SemiBold" Opacity="0.7" Margin="6,4,0,8" />
+                    <StackPanel DockPanel.Dock="Bottom" Spacing="6" Margin="0,8,0,0">
+                        <Border IsVisible="{Binding PendingRemoval, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                BorderBrush="#C0DC2626" BorderThickness="1" CornerRadius="6" Padding="10" Background="#18DC2626">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="{Binding PendingRemovalText}" TextWrapping="Wrap" FontSize="12" />
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Button Content="Remove" Background="#DC2626" Foreground="White" Command="{Binding ConfirmRemovalCommand}" />
+                                    <Button Content="Cancel" Command="{Binding CancelRemovalCommand}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <Button Content="+ Add workspace" HorizontalAlignment="Stretch" Command="{Binding AddWorkspaceCommand}" />
+                        <Button Content="Remove selected" HorizontalAlignment="Stretch"
+                                Command="{Binding RemoveWorkspaceCommand}" CommandParameter="{Binding SelectedWorkspace}" />
+                        <Button Content="Settings" HorizontalAlignment="Stretch" Margin="0,8,0,0"
+                                Command="{Binding OpenSettingsCommand}" />
+                    </StackPanel>
+                    <ListBox ItemsSource="{Binding Workspaces}" SelectedItem="{Binding SelectedWorkspace}" Background="Transparent">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:WorkspaceViewModel">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Ellipse Width="12" Height="12" Fill="{Binding Brush}" VerticalAlignment="Center" />
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                        <TextBlock FontSize="11" Opacity="0.6">
+                                            <Run Text="{Binding Accounts.Count}" /><Run Text=" accounts · " /><Run Text="{Binding Subscriptions.Count}" /><Run Text=" subscriptions" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <views:SettingsView Grid.Column="1" IsVisible="{Binding IsSettingsOpen}" />
+            <ContentControl Grid.Column="1" Content="{Binding SelectedWorkspace}" IsVisible="{Binding !IsSettingsOpen}">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate x:DataType="vm:WorkspaceViewModel">
+                        <views:WorkspaceView />
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+        </Grid>
+    </DockPanel>
+</Window>

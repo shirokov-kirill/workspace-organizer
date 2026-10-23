@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkspaceOrganizer.App.ViewModels"
+             x:Class="WorkspaceOrganizer.App.Views.SubscriptionsView"
+             x:DataType="vm:WorkspaceViewModel">
+    <Grid ColumnDefinitions="300,*" Margin="0,12,0,0">
+        <DockPanel Margin="0,0,16,0">
+            <Button DockPanel.Dock="Bottom" Content="+ Add subscription" HorizontalAlignment="Stretch" Margin="0,8,0,0"
+                    Command="{Binding AddSubscriptionCommand}" />
+            <ListBox ItemsSource="{Binding Subscriptions}" SelectedItem="{Binding SelectedSubscription}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:SubscriptionViewModel">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                            <TextBlock FontSize="12" Opacity="0.65">
+                                <Run Text="{Binding CostText}" /><Run Text=" · " /><Run Text="{Binding RenewalText}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <TextBlock Grid.Column="1" Text="Select a subscription, or add one. Totals in the header are per currency and include only active subscriptions."
+                   TextWrapping="Wrap" Opacity="0.6" MaxWidth="460" HorizontalAlignment="Left"
+                   IsVisible="{Binding SelectedSubscription, Converter={x:Static ObjectConverters.IsNull}}" />
+
+        <ScrollViewer Grid.Column="1" IsVisible="{Binding SelectedSubscription, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel DataContext="{Binding SelectedSubscription}" x:DataType="vm:SubscriptionViewModel" Spacing="10" MaxWidth="560" HorizontalAlignment="Left">
+                <TextBlock Text="Name" />
+                <TextBox Text="{Binding Name}" />
+                <Grid ColumnDefinitions="*,12,120,12,*">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Cost" />
+                        <NumericUpDown Value="{Binding Cost}" Minimum="0" Increment="1" FormatString="0.00" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="4">
+                        <TextBlock Text="Currency" />
+                        <TextBox Text="{Binding Currency}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="4" Spacing="4">
+                        <TextBlock Text="Billed" />
+                        <ComboBox ItemsSource="{x:Static vm:SubscriptionViewModel.Cycles}" SelectedItem="{Binding Cycle}" HorizontalAlignment="Stretch" />
+                    </StackPanel>
+                </Grid>
+                <TextBlock Text="A renewal date (later renewals are calculated from it)" />
+                <CalendarDatePicker SelectedDate="{Binding Renewal}" />
+                <CheckBox Content="Active" IsChecked="{Binding Active}" />
+                <TextBlock Text="Workspace" />
+                <ComboBox ItemsSource="{Binding AllWorkspaces}" SelectedItem="{Binding Workspace}" MinWidth="220"
+                          DisplayMemberBinding="{Binding Name, x:DataType=vm:WorkspaceViewModel}" />
+                <TextBlock Text="Notes" />
+                <TextBox Text="{Binding Notes}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80"
+                         PlaceholderText="Payment card, who pays, how to cancel…" />
+                <Button Content="Remove" Margin="0,6,0,0"
+                        Command="{Binding Workspace.RemoveSubscriptionCommand}" CommandParameter="{Binding}" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
